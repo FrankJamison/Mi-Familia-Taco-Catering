@@ -1,79 +1,85 @@
 # Mi Familia Taco Catering (2015)
 
-Static marketing website for **Mi Familia Taco Catering**. The site is built as a set of classic `.htm` pages styled with an Artisteer-generated theme and enhanced with a small amount of JavaScript (menu behavior and an image slider on the gallery page).
+Static marketing site for **Mi Familia Taco Catering** (multi-page brochure site). Built as classic `.htm` pages with an Artisteer-generated theme, plus light JavaScript for navigation behavior and a photo gallery slider.
 
-## What’s in this repo
+This repo is a good “small-but-real” example of shipping a complete website: consistent navigation across pages, a conversion flow (quote request), SEO meta tags, and a light sprinkle of unobtrusive JavaScript.
 
-### Pages
+## Highlights (design + development)
 
-- `index.htm` — Home / welcome copy.
-- `stand.htm` — Taco stand menu and hours.
-- `catering.htm` — Catering overview and link to quote request.
-- `quote.htm` — Catering packages + “Request a Quote” form.
-- `gallery.htm` — Photo gallery with a Jssor slider.
-- `about-us.htm` — About copy.
-- `contact-us.htm` — Phone numbers, location, and email link.
-- `thankyou.htm` — Confirmation page after a successful quote request.
-- `error.htm` — Error page shown when the quote request submission fails.
+- **Cohesive theme + layout system**: two-column layout with reusable “sheet” components, headers, and menu blocks (see `art-*` classes throughout the markup).
+- **Conversion funnel**: `catering.htm` → `quote.htm` form → `thankyou.htm` / `error.htm` redirect flow.
+- **Photo gallery UX**: slider-based gallery using **Jssor Slider** with responsive resizing logic (`jssor_1_slider_init()` in `gallery.htm`).
+- **Progressive enhancement**: the site works as plain HTML/CSS; JS mainly enhances menus (active state/hover behavior) and the gallery.
+- **Modernized baseline (2026 refresh)**: HTML5 doctype + viewport meta, improved responsive behavior, and no jQuery requirement.
+- **SEO basics**: per-page `<title>`, and descriptive `meta` tags (description/keywords).
 
-### Assets
+## Tech stack
 
-- `css/`
-  - `style.css` — Main theme stylesheet (Artisteer).
-  - `style.ie6.css`, `style.ie7.css` — Legacy IE-specific styles.
-- `js/`
-  - `jquery.js` / `jquery-1.9.1.min.js` — jQuery used by the theme and gallery.
-  - `script.js` — Theme behaviors (menu/vmenu, legacy IE fixes).
-  - `jssor.slider.mini.js` — Gallery slider library.
-- `images/` — Theme images, headers, UI graphics (e.g., quote button).
-- `photos/` — Gallery images.
+- HTML: **HTML5**
+- CSS: Artisteer v3 theme output (design by Artisteer; development updates by Frank Jamison)
+- JavaScript:
+  - `js/script.js`: small vanilla JS enhancements (menu separators, vmenu “active” state)
+  - `js/jssor.slider.mini.js`: image slider library for the gallery
 
-## Tech notes
+## Site map
 
-- Markup is XHTML 1.0 Transitional.
-- Theme styling and layout were generated with **Artisteer v3** (see `css/style.css` header).
-- The gallery uses **Jssor Slider** and initializes via `jssor_1_slider_init()` embedded in `gallery.htm`.
+- `index.htm` — Home / welcome copy
+- `stand.htm` — Taco stand menu and hours
+- `catering.htm` — Catering overview + link to quote request
+- `quote.htm` — Catering packages + “Request a Quote” form
+- `gallery.htm` — Photo gallery (Jssor slider)
+- `about-us.htm` — About copy
+- `contact-us.htm` — Phone numbers + email link
+- `thankyou.htm` — Confirmation page after quote submission
+- `error.htm` — Error page if submission fails
+
+## Run locally
+
+You can open `index.htm` directly in a browser, but using a local static server avoids file:// restrictions and is closer to production behavior.
+
+### Option A: Python
+
+```bash
+python -m http.server 8000
+```
+
+Then visit `http://127.0.0.1:8000/index.htm`.
+
+### Option B: Node
+
+```bash
+npx http-server -p 8000
+```
+
+Then visit `http://127.0.0.1:8000/index.htm`.
 
 ## Quote form behavior
 
-The quote form on `quote.htm` posts to an external hosted form handler (a server-side email script). It includes:
+The quote form on `quote.htm` posts to a hosted form handler:
 
-- Required field enforcement configured via hidden inputs (`required`, `order`).
-- Destination email set via a hidden input (`my_email`).
-- Redirect URLs for success/failure (`thankyou_url`, `error_url`).
+- Endpoint: `http://www.powweb.com/scripts/formemail.bml`
+- Required fields are configured via hidden inputs (`required`, `order`)
+- Recipient is set via hidden input (`my_email`)
+- Redirects to live URLs on success/failure (`thankyou_url`, `error_url`)
 
-If you’re previewing the site locally as static files, the form will still attempt to submit to that external endpoint (if reachable). If you intend to modernize this, replace the form action with your own backend or a maintained form provider.
-
-## How to view the site
-
-### Option A: Open directly in a browser
-
-Because this is a static site, you can typically open `index.htm` directly.
-
-### Option B: Serve the folder with a simple static server (recommended)
-
-Serving the folder avoids some browser restrictions around local file access.
-
-- **Python** (if installed):
-  - From the project root: `python -m http.server 8000`
-  - Then browse to: `http://127.0.0.1:8000/index.htm`
-
-- **Node.js** (if installed):
-  - `npx http-server -p 8000`
-  - Then browse to: `http://127.0.0.1:8000/index.htm`
-
-> Note: A VS Code task may exist in this workspace to open the site in Chrome, but the safest, most portable approach is to use one of the options above.
+When running locally, submitting the form will still attempt to post to that external endpoint.
 
 ## Deployment
 
-This project can be deployed to any static host.
+This project can be deployed to any static host (traditional hosting, S3, Netlify, etc.).
 
-- Upload the **entire** folder so relative links keep working.
-- Preserve the directory structure (`css/`, `js/`, `images/`, `photos/`).
-- Ensure the host serves `.htm` as HTML.
+- Upload the entire folder (relative paths assume `css/`, `js/`, `images/`, `photos/` remain intact).
+- Ensure the host serves `.htm` files as HTML.
 
-## Maintenance tips
+## Developer notes / maintenance
 
-- When editing navigation, update both the top menu (`ul.art-menu`) and the sidebar menu (`ul.art-vmenu`) on each page (they are duplicated in the markup).
-- The gallery slider images are listed directly in `gallery.htm` as `<img data-u="image" src="photos/...">`.
-- There are legacy IE6/IE7 styles and compatibility scripts included; remove only if you’re intentionally dropping support for those browsers.
+- **Navigation is duplicated** in the markup (top menu `ul.art-menu` + sidebar menu `ul.art-vmenu`). When changing nav items, update both on each page.
+- **Gallery images** are hard-coded in `gallery.htm` as `<img data-u="image" src="photos/...">` entries.
+- `js/script.js` is intentionally minimal and runs on `DOMContentLoaded`.
+
+## 2026 refresh notes
+
+- Markup updated to HTML5 + viewport meta.
+- Legacy IE6/IE7 shims removed.
+- jQuery removed (theme behavior is now vanilla JS).
+- Added responsive layout improvements (the theme is fixed-width by default).
